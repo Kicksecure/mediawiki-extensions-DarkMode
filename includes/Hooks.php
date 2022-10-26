@@ -186,7 +186,12 @@ class Hooks implements
 	 * @return bool
 	 */
 	private function isDarkModeActive( IContextSource $context ): bool {
-		$var = $context->getRequest()->getRawVal( 'usedarkmode' );
+		// If the user is not logged in look for the cookie "mw-darkmode" (string: "0"|"1") which is set in the ext.DarkMode.js file
+		$var = ( $context->getUser()->isAnon()
+			? $context->getRequest()->getCookie( 'usedarkmode', '', '0' )
+			: $context->getRequest()->getRawVal( 'usedarkmode' )
+		);
+
 		if ( $var === '0' || $var === '1' ) {
 			// On usedarkmode=0 or usedarkmode=1 overwrite the user setting.
 			return (bool)$var;

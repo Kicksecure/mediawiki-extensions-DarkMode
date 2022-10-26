@@ -31,7 +31,14 @@ $( () => {
 		// Update the link text.
 		$darkModeLink.find( labelSelector )
 			.text( mw.msg( darkMode ? 'darkmode-default-link' : 'darkmode-link' ) );
-		new mw.Api().saveOption( 'darkmode', darkMode ? '1' : '0' );
+
+		if( mw.user.isAnon() ) {
+			// If the user is anonymous (not logged in) write a cookie
+			$.cookie( 'usedarkmode', darkMode ? '1' : '0', { expires: 30, path: '/' } );
+		} else {
+			// If the user is logged in write with API to user settings
+			new mw.Api().saveOption( 'darkmode', darkMode ? '1' : '0' );
+		}
 
 		// Update the mobile theme-color
 		$( 'meta[name="theme-color"]' ).attr( 'content', darkMode ? '#000000' : '#eaecf0' );
